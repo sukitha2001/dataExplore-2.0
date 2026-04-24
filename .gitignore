@@ -1,6 +1,4 @@
-# Ignore the dataset 
-*.csv
-*.xlsx
+
 
 # Ignore Python environments and cache
 .ipynb_checkpoints/
