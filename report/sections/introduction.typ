@@ -21,6 +21,7 @@ To move beyond visual trends and into scientific certainty, we performed Statist
 
 Finally, we synthesized these insights into a Predictive Model, transforming historical data into a forecasting tool. By selecting an appropriate algorithm, such as Logistic Regression for its interpretability or a Random Forest for its ability to handle complex patterns, we trained the system to assign a probability score to new patients. The success of this model likely hinged on optimization metrics like sensitivity or AUC-ROC, ensuring the tool is sensitive enough to catch high-risk cases without an overwhelming number of false alarms.
 
+
 == Dataset Description
 
 The healthcare dataset contains patient information could be categorized into four main groups:

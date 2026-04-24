@@ -51,7 +51,7 @@ import styling
 TARGET = 'stroke_event'
 
 # Features to exclude
-EXCLUDE = ['patient_id', TARGET, 'Unnamed: 0', 'cluster']
+EXCLUDE = ['patient_id', TARGET, 'Unnamed: 0']
 
 # Numerical features
 NUMERICAL_COLS = ['age', 'glucose_level', 'bmi_value', 'risk_score']
@@ -60,7 +60,7 @@ NUMERICAL_COLS = ['age', 'glucose_level', 'bmi_value', 'risk_score']
 CATEGORICAL_COLS = [
     'gender', 'age_group', 'has_hypertension', 'has_heart_disease',
     'marital_status', 'employment_type', 'residence', 'high_glucose',
-    'bmi_category', 'smoking_habit', 'lifestyle_risk'
+    'bmi_category', 'smoking_habit', 'lifestyle_risk', 'cluster'
 ]
 
 # Cross-validation settings
@@ -111,13 +111,13 @@ def get_models_balanced():
         ),
         
         # --- XGBoost ---
-        'XGBoost (Balanced)': XGBClassifier(
-            scale_pos_weight='balanced',
-            n_estimators=100,
-            use_label_encoder=False,
-            eval_metric='logloss',
-            random_state=42
-        ) if XGBClassifier else None,
+        # 'XGBoost (Balanced)': XGBClassifier(
+        #     scale_pos_weight='balanced',
+        #     n_estimators=100,
+        #     use_label_encoder=False,
+        #     eval_metric='logloss',
+        #     random_state=42
+        # ) if XGBClassifier else None,
         
         # --- CatBoost ---
         'CatBoost (Balanced)': CatBoostClassifier(
@@ -167,12 +167,12 @@ def get_models_unbalanced():
         ),
         
         # --- XGBoost ---
-        'XGBoost': XGBClassifier(
-            n_estimators=100,
-            use_label_encoder=False,
-            eval_metric='logloss',
-            random_state=42
-        ) if XGBClassifier else None,
+        # 'XGBoost': XGBClassifier(
+        #     n_estimators=100,
+        #     use_label_encoder=False,
+        #     eval_metric='logloss',
+        #     random_state=42
+        # ) if XGBClassifier else None,
         
         # --- CatBoost ---
         'CatBoost': CatBoostClassifier(
@@ -189,7 +189,7 @@ def get_models_unbalanced():
 # =============================================================================
 
 print("Loading data...")
-df = pd.read_csv('healthcare_data.csv')
+df = pd.read_csv('../data/train_with_clusters.csv')
 print(f"Dataset shape: {df.shape}")
 
 # Separate features and target
@@ -203,10 +203,6 @@ for col in CATEGORICAL_COLS:
         le = LabelEncoder()
         X[col] = le.fit_transform(X[col].astype(str))
         le_dict[col] = le
-
-# Handle missing values
-imputer = SimpleImputer(strategy='median')
-X = pd.DataFrame(imputer.fit_transform(X), columns=X.columns)
 
 # Scale features
 scaler = StandardScaler()
@@ -378,11 +374,19 @@ print("\n" + "="*70)
 print("TOP 3 MODELS - TRAIN/TEST SPLIT EVALUATION")
 print("="*70)
 
-from sklearn.model_selection import train_test_split
+test_df = pd.read_csv('../data/test_with_clusters.csv')
+# Separate features and target
+X_test = test_df.drop('stroke_event')
+y_test = test_df['stroke_event']
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X_scaled, y, test_size=0.2, random_state=42, stratify=y
-)
+# Apply same preprocessing
+for col in NUMERICAL_COLS:
+    if col in X_test.columns:
+        X_test[col] = scaler.transform(X_test[[col]])
+
+for col in CATEGORICAL_COLS:
+    if col in X_test.columns:
+        X_test[col] = le_dict[col].transform(X_test[col].astype(str))
 
 top_models = results_combined.head(3)['model_name'].tolist()
 
@@ -427,23 +431,23 @@ print(f"Best F1 Score (CV): {best_score:.4f}")
 print(f"\nNumber of models compared: {len(results_combined)}")
 print(f"Cross-validation folds: {CV_FOLDS}")
 
-print("\n" + "="*70)
-print("HOW TO EDIT THIS SCRIPT")
-print("="*70)
-print("""
-1. To add a new model:
-   - Add to get_models_balanced() or get_models_unbalanced()
-   - Example:
-     'New Model': NewModelClassifier(params, class_weight='balanced', ...)
+# print("\n" + "="*70)
+# print("HOW TO EDIT THIS SCRIPT")
+# print("="*70)
+# print("""
+# 1. To add a new model:
+#    - Add to get_models_balanced() or get_models_unbalanced()
+#    - Example:
+#      'New Model': NewModelClassifier(params, class_weight='balanced', ...)
 
-2. To change scoring metric:
-   - Edit the 'scoring' parameter in run_cv_comparison()
-   - Options: 'accuracy', 'f1', 'precision', 'recall', 'roc_auc'
+# 2. To change scoring metric:
+#    - Edit the 'scoring' parameter in run_cv_comparison()
+#    - Options: 'accuracy', 'f1', 'precision', 'recall', 'roc_auc'
 
-3. To tune hyperparameters:
-   - Add GridSearchCV or RandomizedSearchCV for specific models
-   - Example provided below
-""")
+# 3. To tune hyperparameters:
+#    - Add GridSearchCV or RandomizedSearchCV for specific models
+#    - Example provided below
+# """)
 
 # =============================================================================
 # EXAMPLE: Hyperparameter Tuning (uncomment to use)

@@ -7,58 +7,32 @@
 
 == Discussion
 
-=== Key Findings
+The advanced analysis refined the modeling pipeline by incorporating feature selection, engineered variables, and cost-sensitive learning strategies tailored to the healthcare context. By removing redundant features such as high_glucose, bmi_category, and age_group, the study reduced multicollinearity and ensured that the models relied on the most informative and non-duplicative predictors. This step improved both model stability and interpretability.
 
-1. Age is the strongest predictor (Chi Square = 2786.98, F = 4906.30), consistent with known epidemiology where stroke risk doubles each decade after age 55.
+Class imbalance remained a central challenge, and it was addressed using class weighting and scale adjustments rather than relying solely on resampling. This approach preserved the original data distribution while still making the models more sensitive to minority (stroke) cases.
 
-2. Cardiovascular comorbidities show strong associations:
-   - Hypertension: OR = 3.92 (approximately 4x higher odds)
-   - Heart disease: OR = 4.57 (highest odds ratio)
-   - High glucose: OR = 3.54
+A key improvement in this phase was the shift from default classification thresholds to threshold optimization using the F2 score. Unlike traditional metrics, the F2 score places greater emphasis on recall, reflecting the real-world cost of missing stroke cases. However, the results revealed an important trade-off: optimizing for F2 slightly reduced recall while improving precision. This indicates that while the models became more conservative in predicting stroke cases (reducing false positives), they still maintained a strong ability to identify true positives.
 
-3. Lifestyle factors (smoking, lifestyle risk score) show significant associations with stroke events.
-
-4. Gender shows no significant association, suggesting stroke risk may be more influenced by other factors.
-
-=== Interpretation
-
-The consistency between parametric and non-parametric tests strengthens validity. Effect sizes provide clinically meaningful insights:
-- Heart disease: 4.57x odds
-- Hypertension: 3.92x odds
-- High glucose: 3.54x odds
-
-The marital status association (OR = 4.06) is likely confounded by age and requires careful interpretation.
-
-=== Clinical Implications
-
-1. Targeted screening: Prioritize patients with hypertension, heart disease, elevated glucose, and advanced age
-2. Preventive interventions: Focus on modifiable risk factors
-3. Resource allocation: Direct prevention efforts toward high-risk populations
-
-=== Limitations
-
-1. Balanced dataset may affect generalizability to real-world populations
-2. BMI value shows NaN results indicating data quality issues
-3. Cross-sectional design limits causal inference
-4. Missing important variables: alcohol consumption, physical activity, family history
+When comparing models, Logistic Regression and XGBoost with F2-optimized thresholds emerged as the most balanced options. They achieved a practical compromise between recall and precision, ensuring that stroke cases are detected at a reasonable rate without overwhelming the system with false alarms. In contrast, other models either over-predicted negatives or introduced too many false positives, making them less viable in a cost-sensitive healthcare setting.
 
 == Conclusion
 
-This comprehensive analysis has identified key variables associated with stroke events. Stroke risk is multifactorial, with age, cardiovascular comorbidities, metabolic indicators, and lifestyle factors as primary predictors.
+This enhanced analysis demonstrates that careful feature engineering, appropriate handling of class imbalance, and threshold optimization are critical for building effective predictive models in healthcare. Simply maximizing accuracy or recall is insufficient; instead, models must balance clinical relevance with operational feasibility.
 
-The identification of 10 significant categorical and 3 significant numerical predictors provides a foundation for developing predictive models. Strong statistical significance (p < 0.001) suggests these factors should be central to any stroke risk prediction framework.
+The use of the F2 score aligned the modeling objective with the real-world priority of minimizing false negatives while still controlling false positives. Among the evaluated models, Logistic Regression and XGBoost (with optimized thresholds) provided the best overall performance, offering both strong detection capability and acceptable precision.
 
-From a public health perspective, this analysis reinforces:
-- Regular blood pressure monitoring and hypertension management
-- Glucose level screening and diabetes prevention
-- Lifestyle modification programs
-- Targeted screening for older adults
+These findings highlight that relatively simpler models, when properly tuned and aligned with domain-specific objectives, can outperform more complex alternatives in practical applications.
 
 == Future Work
 
-1. Predictive model development using machine learning algorithms
-2. Validation in independent datasets
-3. Investigation of interaction effects between risk factors
-4. Improvement of data quality
-5. Collection of additional risk factors
-6. Development of risk stratification protocols
+Several improvements can further strengthen this work:
+
+- Advanced Resampling Techniques: Incorporating methods such as SMOTE or hybrid sampling could be compared with class weighting to assess potential gains.
+- Cost-Sensitive Learning: Explicitly defining and integrating misclassification costs into model training could better reflect real-world financial and clinical impacts.
+- Model Interpretability: Applying explainability techniques (e.g., SHAP values) would help clinicians understand and trust model predictions.
+- Threshold Customization by Use Case: Different thresholds could be set depending on clinical scenarios (e.g., screening vs. diagnosis) to optimize decision-making.
+- External Validation: Testing the models on independent or real hospital datasets would improve confidence in generalizability.
+- Integration into Clinical Systems: Future work could explore deployment within decision support tools, enabling real-time stroke risk assessment.
+
+
+By addressing these areas, the predictive framework can be made more accurate, interpretable, and applicable in real-world healthcare scenarios.

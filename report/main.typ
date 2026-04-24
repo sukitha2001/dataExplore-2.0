@@ -7,22 +7,13 @@
 #set text(font: "Times New Roman")
 
 
-// Extra packages to your liking
-// Physics-reltated tools for equations
-// #import "@preview/physica:0.9.6": *
-// Specifying quantities and units
-// #import "@preview/unify:0.7.1": num, numrange, qty, qtyrange
-// Formatting of uncertainties
-// #import "@preview/zero:0.5.0"
-
-
 // Main styling, containg the majority of typesetting including document layout, fonts, heading styling, figure styling, outline styling, etc. Some parts of the styling are customizable.
 #show: base.with(
   // These first two parameters are only used for the pdf metadata.
   title: "Predicting Stroke Risk Using Patient Health and Lifestyle Data",
-  name: "Vidura Gunawardana",
+  name: "",
   // What is displayed at the top-right of the page. The top-left of the page displays the current chapter.
-  rightheader: "",
+  rightheader: "Ctrl Freaks",
 //   // Main and math fonts
   // main-font: "New York",
 //   // math-font: "New York",
@@ -70,16 +61,22 @@
     [*Member*], [*Contributions*]
   ),
   [Vidura Gunawardana], [
+    - EDA Plotting
+    - Plot Styling
     - Statistical Testing
     - Cluster Analysis
+    - Report Writing
   ],
   [Sukitha Rathnayake], [
-    - Statistical Testing
-    - Cluster Analysis
+    - Data Preprocessing
+    - Feature Engineering
+    - Model Training
+    - Model Evaluation
   ],
-  [Prabhavi], [
-    - Statistical Testing
-    - Cluster Analysis
+  [Prabhavi Hemachandra], [
+    - Model Training
+    - Model Evaluation
+    - Report Writing
   ],
   align: (start, start),
 )
